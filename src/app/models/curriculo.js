@@ -1,48 +1,40 @@
 const mongoose = require("../../database");
 
 const CurriculoSchema = new mongoose.Schema({
-  cursosExtra: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  usuarioId: {
+    type: String,
+    require: true,
+  },
+  cursosExtra: {
+      type: Array,
       ref: "CursosExtra",
-      default: [],
+      require: true,
     },
-  ],
-  expProfissional: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  expProfissional: {
+      type: Array,
       ref: "ExpProfissional",
-      default: [],
+      require: true,
     },
-  ],
-  estilo: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  estilo: {
+      type: Array,
       ref: "Estilo",
-      default: [],
+      require: true,
     },
-  ],
-  formacao: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  formacao: {
+      type: Array,
       ref: "Formacao",
-      default: [],
+      require: true,
     },
-  ],
-  habilidades: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  habilidades: {
+      type: Array,
       ref: "Habilidade",
-      default: [],
+      require: true,
     },
-  ],
-  idiomas: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
+  idiomas:{
+      type: Array,
       ref: "Idiomas",
-      default: [],
+      require: true,
     },
-  ],
   sobreMim: {
     type: String,
   },

@@ -4,13 +4,14 @@ const bcrypt = require("bcryptjs");
 
 const crypto = require("crypto");
 
-const mailer = require("../../modules/mailer");
+const mailer = require("../../module/mailer");
 
 const jwt = require("jsonwebtoken");
 
-const authConfig = require("../../config/auth");
+const authConfig = require("../../config/auth.json");
 
-const Usuario = require("../models/usuario");
+const Usuario = require("../models/usario");
+const Curriculo = require("../models/curriculo");
 
 const router = express.Router();
 
@@ -32,7 +33,6 @@ router.post("/register", async (req, res) => {
     cidade,
     bairro,
     rua,
-    numero,
     complemento,
     linkedin,
     curriculo,
@@ -52,7 +52,7 @@ router.post("/register", async (req, res) => {
     }
 
     var usuario;
-    
+
     const hash = await bcrypt.hash(senha, 10);
     senha = hash;
 
@@ -67,12 +67,10 @@ router.post("/register", async (req, res) => {
       cidade,
       bairro,
       rua,
-      numero,
       complemento,
       linkedin,
       curriculo,
     });
-
     usuario.senha = undefined;
 
     return res.send({
@@ -81,7 +79,7 @@ router.post("/register", async (req, res) => {
     });
   } catch (err) {
     return res.status(400).send({
-      error: "Falha no registro",
+      error: "Erro ao criar o usuário",
     });
   }
 });
@@ -114,7 +112,7 @@ router.post("/authenticate", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Usuario.find({}, { email: 1 });
+    const usuarios = await Usuario.find({});
     return res.send({ usuarios });
   } catch (err) {
     return res.status(400).send({ error: "Erro em carregar os usuários" });
@@ -124,7 +122,8 @@ router.get("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.params.userId);
-    return res.send({ usuario });
+    const curriculo = await Curriculo.findById(usuario.curriculo);
+    return res.send({ usuario, curriculo });
   } catch (err) {
     return res.status(400).send({ error: "Erro em carregar os usuários" });
   }
@@ -141,7 +140,7 @@ router.post("/forgot_password", async (req, res) => {
 
     if (!usuario) {
       return res.status(400).send({
-        error: "usuário não encontrado",
+        error: "Usuário não encontrado",
       });
     }
 
@@ -159,16 +158,14 @@ router.post("/forgot_password", async (req, res) => {
     mailer.sendMail(
       {
         to: email,
-        from: "Curriculead <curriculeads@gmail.com>",
+        from: "CurricuLEAD <curriculeads@gmail.com>",
         subject: "Recuperação de Senha",
         template: "forgot_password",
         context: { token },
       },
       (err) => {
         if (err) {
-          return res
-            .status(400)
-            .send({ error: "Erro ao enviar o email de recuperacao" });
+          return res.status(400).send({ error: err });
         }
         return res.send();
       }
