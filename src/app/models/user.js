@@ -1,74 +1,75 @@
 const mongoose = require("../../database");
 const bcrypt = require("bcryptjs");
+const { Gender } = require("./enumerators/gender.enum");
 
-const UsuarioSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
     required: true,
     lowercase: true,
   },
-  nome: {
+  name: {
     type: String,
     required: true,
   },
-  senha: {
+  password: {
     type: String,
     required: true,
     select: false,
   },
-  senhaResetToken: {
+  passwordResetToken: {
     type: String,
     select: false,
   },
-  senhaResetExpires: {
+  passwordResetExpires: {
     type: Date,
     select: false,
   },
-  sexo: {
-    type: Number,
+  gender: {
+    type: String,
+    enum: Gender,
     required: true,
   },
-  dataNascimento: {
+  birthday: {
     type: Date,
     required: true,
   },
-  telefone: {
-    type: Number,
-    required: true,
-  },
-  estado: {
+  phone: {
     type: String,
     required: true,
   },
-  cidade: {
+  state: {
     type: String,
     required: true,
   },
-  bairro: {
+  city: {
     type: String,
     required: true,
   },
-  rua: {
+  district: {
     type: String,
     required: true,
   },
-  numero: {
-    type: Number,
+  street: {
+    type: String,
     required: true,
   },
-  complemento: {
+  number: {
+    type: String,
+  },
+  complement: {
     type: String,
   },
   linkedin: {
     type: String,
   },
-  curriculo: {
+  curriculum: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Curriculo",
+    ref: "Curriculum",
   },
 });
 
-const Usuario = mongoose.model("Usuario", UsuarioSchema);
+const User = mongoose.model("User", UserSchema);
 
-module.exports = Usuario;
+module.exports = User;

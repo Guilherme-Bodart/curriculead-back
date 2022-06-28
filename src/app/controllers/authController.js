@@ -10,8 +10,9 @@ const jwt = require("jsonwebtoken");
 
 const authConfig = require("../../config/auth.json");
 
-const Usuario = require("../models/usario");
-const Curriculo = require("../models/curriculo");
+const User = require("../models/user");
+const Curriculum = require("../models/curriculum");
+const ExtraCourses = require('../models/extraCourse')
 
 const router = express.Router();
 
@@ -24,87 +25,92 @@ function generateToken(params = {}) {
 router.post("/register", async (req, res) => {
   var {
     email,
-    senha,
-    nome,
-    sexo,
-    dataNascimento,
-    telefone,
-    estado,
-    cidade,
-    bairro,
-    rua,
-    complemento,
+    password,
+    name,
+    gender,
+    birthday,
+    phone,
+    state,
+    city,
+    district,
+    street,
+    complement,
     linkedin,
-    curriculo,
+    curriculum,
+    extraCourses,
+    academicEducations
   } = req.body;
-
+  console.log('BODY', req.body)
   if (email === "" || email === undefined) {
-    return res.status(400).send({ error: "Campo E-Mail vazio" });
-  } else if (senha === "" || senha === undefined) {
-    return res.status(400).send({ error: "Campo Senha vazio" });
-  } else if (nome === "" || nome === undefined) {
-    return res.status(400).send({ error: "Campo Nome vazio" });
+    return res.status(400).send({ error: "E-mail is null" });
+  } else if (password === "" || password === undefined) {
+    return res.status(400).send({ error: "Passoword is null" });
+  } else if (name === "" || name === undefined) {
+    return res.status(400).send({ error: "Name is null" });
   }
 
   try {
-    if (await Usuario.findOne({ email })) {
-      return res.status(400).send({ error: "E-mail já cadastrado" });
+    if (await User.findOne({ email })) {
+      return res.status(400).send({ error: "E-mail already register" });
     }
 
-    var usuario;
+    var user;
 
-    const hash = await bcrypt.hash(senha, 10);
-    senha = hash;
+    const hash = await bcrypt.hash(password, 10);
+    password = hash;
 
-    usuario = await Usuario.create({
+    user = await User.create({
       email,
-      senha,
-      nome,
-      sexo,
-      dataNascimento,
-      telefone,
-      estado,
-      cidade,
-      bairro,
-      rua,
-      complemento,
+      password,
+      name,
+      gender,
+      birthday,
+      phone,
+      state,
+      city,
+      district,
+      street,
+      complement,
       linkedin,
-      curriculo,
+      curriculum,
     });
-    usuario.senha = undefined;
+
+    await user.save();
+
+    user.password = undefined;
 
     return res.send({
-      usuario,
-      token: generateToken({ id: usuario._id }),
+      user,
+      token: generateToken({ id: user._id }),
     });
   } catch (err) {
     return res.status(400).send({
-      error: "Erro ao criar o usuário",
+      error: err,
     });
   }
 });
 
 router.post("/authenticate", async (req, res) => {
-  var { email, senha } = req.body;
-  const usuario = await Usuario.findOne({ email }).select("+senha");
+  var { email, password } = req.body;
+  const user = await User.findOne({ email }).select("+password");
 
-  if (!usuario) {
+  if (!user) {
     return res.status(400).send({
-      error: "usuário não encontrado",
+      error: "User not found",
     });
   }
 
-  if (!(await bcrypt.compare(senha, usuario.senha))) {
+  if (!(await bcrypt.compare(password, user.password))) {
     return res.status(400).send({
-      error: "senha inválida",
+      error: "Invalid password",
     });
   }
 
-  usuario.senha = undefined;
+  user.password = undefined;
 
   res.send({
-    usuario,
-    token: generateToken({ id: usuario.id }),
+    user,
+    token: generateToken({ id: user.id }),
   });
 
   return res.status(200);
@@ -112,20 +118,20 @@ router.post("/authenticate", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Usuario.find({});
-    return res.send({ usuarios });
+    const users = await User.find({});
+    return res.send({ users });
   } catch (err) {
-    return res.status(400).send({ error: "Erro em carregar os usuários" });
+    return res.status(400).send({ error: "Error loading users" });
   }
 });
 
 router.get("/:userId", async (req, res) => {
   try {
-    const usuario = await Usuario.findById(req.params.userId);
-    const curriculo = await Curriculo.findById(usuario.curriculo);
-    return res.send({ usuario, curriculo });
+    const user = await User.findById(req.params.userId);
+    const curriculum = await Curriculum.findById(user.curriculum);
+    return res.send({ user, curriculum });
   } catch (err) {
-    return res.status(400).send({ error: "Erro em carregar os usuários" });
+    return res.status(400).send({ error: "Error loading users" });
   }
 });
 
@@ -136,11 +142,11 @@ router.post("/forgot_password", async (req, res) => {
   }
 
   try {
-    const usuario = await Usuario.findOne({ status: 1, email });
+    const user = await User.findOne({ status: 1, email });
 
-    if (!usuario) {
+    if (!user) {
       return res.status(400).send({
-        error: "Usuário não encontrado",
+        error: "User not found",
       });
     }
 
@@ -148,10 +154,10 @@ router.post("/forgot_password", async (req, res) => {
     const now = new Date();
     now.setHours(now.getHours() + 1);
 
-    await Usuario.findByIdAndUpdate(usuario.id, {
+    await User.findByIdAndUpdate(user.id, {
       $set: {
-        senhaResetToken: token,
-        senhaResetExpires: now,
+        passwordResetToken: token,
+        passwordResetExpires: now,
       },
     });
 
@@ -159,7 +165,7 @@ router.post("/forgot_password", async (req, res) => {
       {
         to: email,
         from: "CurricuLEAD <curriculeads@gmail.com>",
-        subject: "Recuperação de Senha",
+        subject: "Recuperação de password",
         template: "forgot_password",
         context: { token },
       },
@@ -171,50 +177,50 @@ router.post("/forgot_password", async (req, res) => {
       }
     );
   } catch (err) {
-    res.status(400).send({ error: "Erro ao recuperar senha, tente novamente" });
+    res.status(400).send({ error: "Error recovering password, try again later" });
   }
 });
 
 router.post("/reset_password", async (req, res) => {
-  var { senha, token } = req.query;
-  if (senha === undefined) {
-    var { senha, token } = req.body;
+  var { password, token } = req.query;
+  if (password === undefined) {
+    var { password, token } = req.body;
   }
 
   try {
-    const usuario = await Usuario.findOne({ senhaResetToken: token }).select(
-      "+senhaResetToken senhaResetExpires"
+    const user = await User.findOne({ passwordResetToken: token }).select(
+      "+passwordResetToken passwordResetExpires"
     );
 
-    if (!usuario) {
+    if (!user) {
       return res.status(400).send({
-        error: "usuário não encontrado",
+        error: "User not found",
       });
     }
 
-    if (token !== usuario.senhaResetToken) {
+    if (token !== user.passwordResetToken) {
       return res.status(400).send({
-        error: "token invalido",
+        error: "Invalid token",
       });
     }
 
     const now = new Date();
 
-    if (now > usuario.senhaResetToken) {
+    if (now > user.passwordResetToken) {
       return res.status(400).send({
-        error: "token expirado",
+        error: "Expired token",
       });
     }
 
-    const hash = await bcrypt.hash(senha, 10);
-    senha = hash;
-    usuario.senha = senha;
+    const hash = await bcrypt.hash(password, 10);
+    password = hash;
+    user.password = password;
 
-    await usuario.save();
+    await user.save();
 
     res.send();
   } catch (err) {
-    res.status(400).send({ error: "Erro ao recuperar senha, tente novamente" });
+    res.status(400).send({ error: "Error recovering password, try again later" });
   }
 });
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/auth");
 
-const Usuario = require("../models/usario");
+const User = require("../models/user");
 
 const router = express.Router();
 
@@ -9,59 +9,62 @@ router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Usuario.find();
-    return res.send({ usuarios });
+    const users = await User.find();
+    return res.send({ users });
   } catch (err) {
-    return res.status(400).send({ error: "Erro em carregar os usuários" });
+    return res.status(400).send({ error: "Error loading users" });
   }
 });
 
 router.get("/:userId", async (req, res) => {
   try {
-    const usuario = await Usuario.find();
-    return res.send({ usuario });
+    const user = await User.find();
+    return res.send({ user });
   } catch (err) {
-    return res.status(400).send({ error: "Erro em carregar o usuário" });
+    return res.status(400).send({ error: "Error loading user" });
   }
 });
 
-router.put("/:usuarioId", async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
     const {
       email,
-      nome,
-      sexo,
-      dataNascimento,
-      telefone,
-      estado,
-      cidade,
-      bairro,
-      rua,
-      complemento,
+      name,
+      gender,
+      birthday,
+      phone,
+      state,
+      city,
+      district,
+      street,
+      complement,
       linkedin,
+      curriculum,
     } = req.body;
 
-    var usuario = await Usuario.findById(req.params.usuarioId);
-    if (email != usuario.email) {
-      if (await Usuario.findOne({ email })) {
-        return res.status(400).send({ error: "e-mail já cadastrado" });
+    var user = await User.findById(req.params.userId);
+    if (email != user.email) {
+      if (await User.findOne({ email })) {
+        return res.status(400).send({ error: "E-mail already register" });
       }
     }
 
-    usuario.email = email;
-    usuario.nome = nome;
-    usuario.sexo = sexo;
-    usuario.dataNascimento = dataNascimento;
-    usuario.telefone = telefone;
-    usuario.estado = estado;
-    usuario.cidade = cidade;
-    usuario.bairro = bairro;
-    usuario.rua = rua;
-    usuario.complemento = complemento;
-    usuario.linkedin = linkedin;
+    user.email = email;
+    user.name = name;
+    user.gender = gender;
+    user.birthday = birthday;
+    user.phone = phone;
+    user.state = state;
+    user.city = city;
+    user.district = district;
+    user.street = street;
+    user.complement = complement;
+    user.linkedin = linkedin;
+    user.curriculum = curriculum;
 
-    await usuario.save();
-    return res.send({ usuario });
+    await user.save();
+    return res.send({ user });
+
   } catch (err) {
     return res.status(400).send({ error: err });
   }
