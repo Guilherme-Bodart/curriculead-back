@@ -36,6 +36,7 @@ router.post("/register", async (req, res) => {
     street,
     complement,
     linkedin,
+    github,
     curriculum,
     extraCourses,
     academicEducations
@@ -72,6 +73,7 @@ router.post("/register", async (req, res) => {
       street,
       complement,
       linkedin,
+      github,
       curriculum,
     });
 

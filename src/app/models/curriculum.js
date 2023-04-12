@@ -10,7 +10,7 @@ const CurriculumSchema = new mongoose.Schema({
     ref: "AcademicEducation",
     required: true,
   }],
-  extraCours: [{
+  extraCourses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "ExtraCourses",
     required: true,

@@ -35,7 +35,7 @@ router.get("/:userId", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const {
-      extraCours,
+      extraCourses,
       styleCurriculum,
       professionalExperience,
       academicEducation,
@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
 
     const usuario = await User.findById(req.usuarioId);
 
-    for (const item of extraCours) {
+    for (const item of extraCourses) {
       let extCr = await ExtraCourses.create(item);
       user.extraCourses.push(extCr._id);
     }
@@ -74,7 +74,7 @@ router.post("/", async (req, res) => {
 
     const curriculum = await Curriculum.create({
       usuarioId: req.usuarioId,
-      extraCours,
+      extraCourses,
       styleCurriculum,
       professionalExperience,
       academicEducation,
@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 router.put("/:curriculumId", async (req, res) => {
   try {
     const {
-      extraCours,
+      extraCourses,
       styleCurriculum,
       professionalExperience,
       academicEducation,
@@ -111,7 +111,7 @@ router.put("/:curriculumId", async (req, res) => {
     var curriculum = await Curriculum.findById(req.params.curriculumId)
 
 
-    for (const item of extraCours) {
+    for (const item of extraCourses) {
       if (!item._id) {
         delete item._id
         let extCr = await ExtraCourses.create(item);
@@ -161,7 +161,7 @@ router.put("/:curriculumId", async (req, res) => {
       }
     }
 
-    curriculum.extraCours = extraCours
+    curriculum.extraCourses = extraCourses
     curriculum.styleCurriculum = styleCurriculum
     curriculum.professionalExperience = professionalExperience
     curriculum.academicEducation = academicEducation

@@ -64,6 +64,9 @@ const UserSchema = new mongoose.Schema({
   linkedin: {
     type: String,
   },
+  github: {
+    type: String,
+  },
   curriculum: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Curriculum",

@@ -39,6 +39,7 @@ router.put("/:userId", async (req, res) => {
       street,
       complement,
       linkedin,
+      github,
       curriculum,
     } = req.body;
 
@@ -60,6 +61,7 @@ router.put("/:userId", async (req, res) => {
     user.street = street;
     user.complement = complement;
     user.linkedin = linkedin;
+    user.github = github;
     user.curriculum = curriculum;
 
     await user.save();
