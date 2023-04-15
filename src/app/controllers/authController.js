@@ -118,7 +118,7 @@ router.post("/authenticate", async (req, res) => {
   return res.status(200);
 });
 
-router.get("/", async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
     const users = await User.find({});
     return res.send({ users });

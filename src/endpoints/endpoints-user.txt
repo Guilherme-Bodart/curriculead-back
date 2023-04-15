@@ -1,0 +1,14 @@
+/user : 
+{
+    / { GET
+        Get do próprio usuario
+    },
+
+    /:userId: { GET
+        Get de um usuario
+    },
+
+    /:userId { POST
+        Criação do curriculo
+    },
+}

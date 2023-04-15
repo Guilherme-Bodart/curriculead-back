@@ -1,0 +1,26 @@
+/auth : 
+{
+    /register : { POST
+        Criação do Usuário
+    },
+
+    /authenticate: { POST
+        Login do Usuário
+    },
+
+    /users: { GET
+        Lista Todos os Usuários
+    },
+
+    /userId: { GET
+        Get de um Usuário
+    },
+
+    /forgot_password: { POST
+        Manda um email para trocar a senha
+    },
+
+    /reset_password: { POST
+        Troca a senha do usuário
+    }
+}

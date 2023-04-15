@@ -1,0 +1,18 @@
+/curriculum : 
+{
+    / { GET
+        Get do próprio curriculo
+    },
+
+    /:userId: { GET
+        Get do curriculo pela busca do ID do usuario
+    },
+
+    / { POST
+        Criação do curriculo
+    },
+
+    /:curriculumId: { Put
+        Atualiza o curriculo pelo id do curriculo
+    },
+}
