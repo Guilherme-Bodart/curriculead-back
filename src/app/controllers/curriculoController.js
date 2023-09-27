@@ -36,6 +36,7 @@ router.post("/", async (req, res) => {
   try {
     const {
       extraCourses,
+      url,
       styleCurriculum,
       professionalExperience,
       academicEducation,
@@ -74,6 +75,7 @@ router.post("/", async (req, res) => {
 
     const curriculum = await Curriculum.create({
       usuarioId: req.usuarioId,
+      url,
       extraCourses,
       styleCurriculum,
       professionalExperience,
@@ -83,8 +85,9 @@ router.post("/", async (req, res) => {
       aboutMe,
       hobby,
     });
+    await curriculum.save();
 
-    usuario.curriculum = curriculum
+    usuario.curriculumId = curriculum._id;
 
     await usuario.save();
 

@@ -29,36 +29,17 @@ const UserSchema = new mongoose.Schema({
   gender: {
     type: String,
     enum: Gender,
-    required: true,
   },
   birthday: {
     type: Date,
-    required: true,
   },
   phone: {
     type: String,
-    required: true,
   },
   state: {
     type: String,
-    required: true,
   },
   city: {
-    type: String,
-    required: true,
-  },
-  district: {
-    type: String,
-    required: true,
-  },
-  street: {
-    type: String,
-    required: true,
-  },
-  number: {
-    type: String,
-  },
-  complement: {
     type: String,
   },
   linkedin: {
@@ -67,7 +48,7 @@ const UserSchema = new mongoose.Schema({
   github: {
     type: String,
   },
-  curriculum: {
+  curriculumId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Curriculum",
   },

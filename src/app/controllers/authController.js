@@ -12,7 +12,7 @@ const authConfig = require("../../config/auth.json");
 
 const User = require("../models/user");
 const Curriculum = require("../models/curriculum");
-const ExtraCourses = require('../models/extraCourse')
+const ExtraCourses = require("../models/extraCourse");
 
 const router = express.Router();
 
@@ -32,16 +32,11 @@ router.post("/register", async (req, res) => {
     phone,
     state,
     city,
-    district,
-    street,
-    complement,
     linkedin,
     github,
-    curriculum,
     extraCourses,
-    academicEducations
+    academicEducations,
   } = req.body;
-  console.log('BODY', req.body)
   if (email === "" || email === undefined) {
     return res.status(400).send({ error: "E-mail is null" });
   } else if (password === "" || password === undefined) {
@@ -56,10 +51,9 @@ router.post("/register", async (req, res) => {
     }
 
     var user;
-
     const hash = await bcrypt.hash(password, 10);
-    password = hash;
 
+    password = hash;
     user = await User.create({
       email,
       password,
@@ -69,15 +63,72 @@ router.post("/register", async (req, res) => {
       phone,
       state,
       city,
-      district,
-      street,
-      complement,
       linkedin,
       github,
-      curriculum,
+      extraCourses,
+      academicEducations,
     });
 
-    await user.save();
+    if (user) await user.save();
+
+    user.password = undefined;
+    return res.send({
+      user,
+      token: generateToken({ id: user._id }),
+    });
+
+  } catch (err) {
+    return res.status(400).send({
+      error: err,
+    });
+  }
+});
+
+router.put("/register", async (req, res) => {
+  var {
+    email,
+    password,
+    name,
+    gender,
+    birthday,
+    phone,
+    state,
+    city,
+    linkedin,
+    github,
+    extraCourses,
+    academicEducations,
+  } = req.body;
+  console.log("BODY", req.body);
+  
+  if (email === "" || email === undefined) {
+    return res.status(400).send({ error: "E-mail is null" });
+  } else if (password === "" || password === undefined) {
+    return res.status(400).send({ error: "Passoword is null" });
+  } else if (name === "" || name === undefined) {
+    return res.status(400).send({ error: "Name is null" });
+  }
+
+  try {
+    var usuario = await User.findById(req.usuarioId);
+
+    const hash = await bcrypt.hash(password, 10);
+    password = hash;
+
+    usuario.email = email;
+    usuario.password = password;
+    usuario.name = name;
+    usuario.gender = gender;
+    usuario.birthday = birthday;
+    usuario.phone = phone;
+    usuario.state = state;
+    usuario.city = city;
+    usuario.linkedin = linkedin;
+    usuario.github = github;
+    usuario.extraCourses = extraCourses;
+    usuario.academicEducations = academicEducations;
+
+    await usuario.save();
 
     user.password = undefined;
 
@@ -127,7 +178,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/user/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const curriculum = await Curriculum.findById(user.curriculum);
@@ -179,7 +230,9 @@ router.post("/forgot_password", async (req, res) => {
       }
     );
   } catch (err) {
-    res.status(400).send({ error: "Error recovering password, try again later" });
+    res
+      .status(400)
+      .send({ error: "Error recovering password, try again later" });
   }
 });
 
@@ -222,7 +275,9 @@ router.post("/reset_password", async (req, res) => {
 
     res.send();
   } catch (err) {
-    res.status(400).send({ error: "Error recovering password, try again later" });
+    res
+      .status(400)
+      .send({ error: "Error recovering password, try again later" });
   }
 });
 

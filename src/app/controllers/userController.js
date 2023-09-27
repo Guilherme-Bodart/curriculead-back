@@ -26,6 +26,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 router.put("/:userId", async (req, res) => {
+  console.log(req.body);
   try {
     const {
       email,
@@ -35,9 +36,6 @@ router.put("/:userId", async (req, res) => {
       phone,
       state,
       city,
-      district,
-      street,
-      complement,
       linkedin,
       github,
       curriculum,
@@ -57,9 +55,6 @@ router.put("/:userId", async (req, res) => {
     user.phone = phone;
     user.state = state;
     user.city = city;
-    user.district = district;
-    user.street = street;
-    user.complement = complement;
     user.linkedin = linkedin;
     user.github = github;
     user.curriculum = curriculum;

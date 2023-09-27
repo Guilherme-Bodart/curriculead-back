@@ -3,6 +3,8 @@ const authConfig = require('../../config/auth.json')
 
 module.exports = (req, res, next) => {
     var authHeader
+    console.log(req.headers.authorization);
+    console.log(req.query.token);
     if(req.headers.authorization){
         authHeader = req.headers.authorization
     }
