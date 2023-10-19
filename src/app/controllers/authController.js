@@ -12,7 +12,7 @@ const authConfig = require("../../config/auth.json");
 
 const User = require("../models/user");
 const Curriculum = require("../models/curriculum");
-const ExtraCourses = require("../models/extraCourse");
+const ExtraCourses = require("../models/extraCourses");
 
 const router = express.Router();
 

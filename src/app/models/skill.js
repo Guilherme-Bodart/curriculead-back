@@ -1,6 +1,6 @@
 const mongoose = require("../../database");
 
-const SkillSchema = new mongoose.Schema({
+const skillSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -11,6 +11,6 @@ const SkillSchema = new mongoose.Schema({
   },
 });
 
-const Skill = mongoose.model("Skill", SkillSchema);
+const skill = mongoose.model("Skill", skillSchema);
 
-module.exports = Skill;
+module.exports = skill;

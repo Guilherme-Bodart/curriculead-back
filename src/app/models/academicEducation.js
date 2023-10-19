@@ -19,6 +19,6 @@ const academicEducationSchema = new mongoose.Schema({
   },
 });
 
-const academicEducation = mongoose.model("academicEducation", academicEducationSchema);
+const academicEducation = mongoose.model("AcademicEducation", academicEducationSchema);
 
 module.exports = academicEducation;

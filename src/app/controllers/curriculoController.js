@@ -1,17 +1,16 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/auth");
+const router = express.Router();
+router.use(authMiddleware);
 
 const User = require("../models/user");
 const Curriculum = require("../models/curriculum");
 const AcademicEducation = require("../models/academicEducation");
 const ProfessionalExperience = require("../models/professionalExperience");
 const Skill = require("../models/skill");
-const ExtraCourses = require("../models/extraCourse");
+const ExtraCourses = require("../models/extraCourses");
+const StyleCurriculum = require("../models/styleCurriculum");
 const Language = require("../models/language");
-
-const router = express.Router();
-
-router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   try {
@@ -24,18 +23,17 @@ router.get("/", async (req, res) => {
 
 router.get("/:userId", async (req, res) => {
   try {
-    const user = await User.findById(req.params.usuarioId).populate(
-      "curriculum"
-    );
-    const curriculum = await Curriculum.find(user.curriculum._id).populate([
-      "academicEducation",
-      "extraCourses",
-      "language",
-      "professionalExperience",
-      "styleCurriculum",
-      "skill",
-    ]);
-    return res.send({ curriculum });
+    const user = await User.findById(req.params.userId);
+    const curriculum = await Curriculum.find(user.curriculumId)
+      .populate([
+        "academicEducation",
+        "styleCurriculum",
+        "language",
+        "extraCourses",
+        "professionalExperience",
+        "skill",
+      ]);
+      return res.send({ curriculum });
   } catch (err) {
     return res.status(400).send({ error: "Error loading curriculum" });
   }
@@ -55,50 +53,62 @@ router.post("/", async (req, res) => {
       hobby,
     } = req.body;
 
-        // Copia essa linha pra testar no insomnia
-    // {"className":"Currículo","url":"outrigger","academicEducation":[{"className":"Educação Acadêmica","courseName":"bb","schoolName":"bb","startDate":"2023-10-11T03:00:00.000Z","endDate":"2023-10-14T03:00:00.000Z"}],"extraCourses":[],"language":[{"className":"Idiomas","name":"ingles","level":4}],"professionalExperience":[{"className":"Experiência Profissional","responsibility":"aa","employer":"aa","description":"aa","startDate":"2023-10-17T03:00:00.000Z","endDate":"2023-10-20T03:00:00.000Z","currentPosition":false},{"className":"Experiência Profissional","responsibility":"ab","employer":"ab","description":"ab","startDate":"2023-10-11T03:00:00.000Z","endDate":"2023-10-15T03:00:00.000Z","currentPosition":false}],"skill":[{"className":"Cursos Extras","name":"react","level":6},{"className":"Cursos Extras","name":"angular","level":7}],"styleCurriculum":{"className":"Estilo do Currículo","name":"","color":""},"aboutMe":"sobre mim","hobby":[]}
-
-
     const usuario = await User.findById(req.usuarioId);
 
-    // Não sei se essa parte aqui dos for's são erradas, ja que eu fiz um modelo pra cada um eu to fazendo isso pra criar esse modelo, mas se precisar posso arrancar os modelos tudo e seguir apenas com listas de objetos 'simples'
-    extraCourses.forEach(async (element, index) => {
-      element = await ExtraCourses.create(element);
-    });
+    console.log({ styleCurriculum });
 
-    academicEducation.forEach(async (element, index) => {
-      element = await AcademicEducation.create(element);
-    });
+    const newStyleCurriculum = await StyleCurriculum.create(styleCurriculum);
 
-    language.forEach(async (element, index) => {
-      element = await Language.create(element);
-    });
+    const extraCoursesIds = await Promise.all(
+      extraCourses.map(async (element) => {
+        const course = await ExtraCourses.create(element);
+        return course._id;
+      })
+    );
 
-    professionalExperience.forEach(async (element, index) => {
-      element = await ProfessionalExperience.create(element);
-    });
+    const academicEducationIds = await Promise.all(
+      academicEducation.map(async (element) => {
+        const education = await AcademicEducation.create(element);
+        return education._id;
+      })
+    );
 
-    skill.forEach(async (element, index) => {
-      element = await Skill.create(element);
-    });
+    const languageIds = await Promise.all(
+      language.map(async (element) => {
+        const lang = await Language.create(element);
+        return lang._id;
+      })
+    );
+
+    const professionalExperienceIds = await Promise.all(
+      professionalExperience.map(async (element) => {
+        const experience = await ProfessionalExperience.create(element);
+        return experience._id;
+      })
+    );
+
+    const skillIds = await Promise.all(
+      skill.map(async (element) => {
+        const skillDoc = await Skill.create(element);
+        return skillDoc._id;
+      })
+    );
 
     const curriculum = await Curriculum.create({
-      usuarioId: req.usuarioId,
+      userId: req.usuarioId,
       url,
-      extraCourses,
-      styleCurriculum,
-      professionalExperience,
-      academicEducation,
-      skill,
-      language,
+      extraCourses: extraCoursesIds,
+      styleCurriculum: newStyleCurriculum.id,
+      professionalExperience: professionalExperienceIds,
+      academicEducation: academicEducationIds,
+      skill: skillIds,
+      language: languageIds,
       aboutMe,
       hobby,
     });
-    console.log(curriculum);
+
     await curriculum.save();
-
     usuario.curriculumId = curriculum._id;
-
     await usuario.save();
 
     return res.send({ curriculum });

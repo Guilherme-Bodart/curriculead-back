@@ -1,6 +1,6 @@
 const mongoose = require("../../database");
 
-const ExtraCourseSchema = new mongoose.Schema({
+const extraCourseSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -14,6 +14,6 @@ const ExtraCourseSchema = new mongoose.Schema({
   }
 });
 
-const ExtraCourse = mongoose.model("ExtraCourse", ExtraCourseSchema);
+const extraCourses = mongoose.model("ExtraCourses", extraCourseSchema);
 
-module.exports = ExtraCourse;
+module.exports = extraCourses;

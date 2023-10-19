@@ -1,6 +1,6 @@
 const mongoose = require("../../database");
 
-const StyleCurriculumSchema = new mongoose.Schema({
+const styleCurriculumSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -11,6 +11,6 @@ const StyleCurriculumSchema = new mongoose.Schema({
   },
 });
 
-const StyleCurriculum = mongoose.model("StyleCurriculum", StyleCurriculumSchema);
+const styleCurriculum = mongoose.model("StyleCurriculum", styleCurriculumSchema);
 
-module.exports = StyleCurriculum;
+module.exports = styleCurriculum;
