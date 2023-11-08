@@ -1,20 +1,33 @@
 const express = require("express");
-
 const bcrypt = require("bcryptjs");
-
 const crypto = require("crypto");
-
+// const passport = require("passport");
 const mailer = require("../../module/mailer");
-
 const jwt = require("jsonwebtoken");
-
 const authConfig = require("../../config/auth.json");
-
 const User = require("../models/user");
 const Curriculum = require("../models/curriculum");
 const ExtraCourses = require("../models/extraCourses");
 
 const router = express.Router();
+
+// router.post("/register/linkedin", async (req, res) => {
+//   passport.use(
+//     new LinkedInStrategy(
+//       {
+//         clientID: LINKEDIN_KEY,
+//         clientSecret: LINKEDIN_SECRET,
+//         callbackURL: "http://127.0.0.1:3002/auth/linkedin/callback",
+//         scope: ["r_emailaddress", "r_liteprofile"],
+//       },
+//       (accessToken, refreshToken, profile, done) => {
+//         process.nextTick(() => {
+//           return done(null, profile);
+//         });
+//       }
+//     )
+//   );
+// });
 
 function generateToken(params = {}) {
   return jwt.sign(params, authConfig.secret, {
@@ -76,7 +89,6 @@ router.post("/register", async (req, res) => {
       user,
       token: generateToken({ id: user._id }),
     });
-
   } catch (err) {
     return res.status(400).send({
       error: err,
@@ -100,7 +112,7 @@ router.put("/register", async (req, res) => {
     academicEducations,
   } = req.body;
   console.log("BODY", req.body);
-  
+
   if (email === "" || email === undefined) {
     return res.status(400).send({ error: "E-mail is null" });
   } else if (password === "" || password === undefined) {
@@ -278,6 +290,18 @@ router.post("/reset_password", async (req, res) => {
     res
       .status(400)
       .send({ error: "Error recovering password, try again later" });
+  }
+});
+
+router.get("/curriculum/:url", async (req, res) => {
+  try {
+    const curriculum = await Curriculum.findOne({ url: req.params.url });
+    res.send({ curriculum });
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .send({ error: err.message });
   }
 });
 

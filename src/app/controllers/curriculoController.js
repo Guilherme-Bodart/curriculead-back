@@ -24,16 +24,15 @@ router.get("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    const curriculum = await Curriculum.find(user.curriculumId)
-      .populate([
-        "academicEducation",
-        "styleCurriculum",
-        "language",
-        "extraCourses",
-        "professionalExperience",
-        "skill",
-      ]);
-      return res.send({ curriculum });
+    const curriculum = await Curriculum.find(user.curriculumId).populate([
+      "academicEducation",
+      "styleCurriculum",
+      "language",
+      "extraCourses",
+      "professionalExperience",
+      "skill",
+    ]);
+    return res.send({ curriculum });
   } catch (err) {
     return res.status(400).send({ error: "Error loading curriculum" });
   }
@@ -54,8 +53,8 @@ router.post("/", async (req, res) => {
     } = req.body;
 
     const usuario = await User.findById(req.usuarioId);
-
-    console.log({ styleCurriculum });
+    let c = await Curriculum.findOne({ url });
+    if (c) throw new Error('Curriculum URL already exists');
 
     const newStyleCurriculum = await StyleCurriculum.create(styleCurriculum);
 
@@ -113,7 +112,7 @@ router.post("/", async (req, res) => {
 
     return res.send({ curriculum });
   } catch (err) {
-    return res.status(400).send({ error: err });
+    return res.status(400).send({ error: err.message });
   }
 });
 
@@ -128,10 +127,14 @@ router.put("/:curriculumId", async (req, res) => {
       language,
       aboutMe,
       hobby,
+      url,
     } = req.body;
 
     var curriculum = await Curriculum.findById(req.params.curriculumId);
-    console.log(curriculum);
+
+    let c = await Curriculum.findOne({ url });
+    if (c && c.url != curriculum.url) throw new Error('URl do currículo já existe');
+
     for (const item of extraCourses) {
       if (!item._id) {
         delete item._id;
