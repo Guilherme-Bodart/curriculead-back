@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:userId", async (req, res) => {
   try {
-    const user = await User.find();
+    const user = await User.findById(req.params.userId);
     return res.send({ user });
   } catch (err) {
     return res.status(400).send({ error: "Error loading user" });
@@ -26,7 +26,6 @@ router.get("/:userId", async (req, res) => {
 });
 
 router.put("/:userId", async (req, res) => {
-  console.log(req.body);
   try {
     const {
       email,

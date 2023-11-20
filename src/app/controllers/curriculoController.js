@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    const curriculum = await Curriculum.find(user.curriculumId).populate([
+    const curriculum = await Curriculum.findOne(user.curriculumId).populate([
       "academicEducation",
       "styleCurriculum",
       "language",
@@ -129,15 +129,11 @@ router.put("/:curriculumId", async (req, res) => {
       hobby,
       url,
     } = req.body;
-
     var curriculum = await Curriculum.findById(req.params.curriculumId);
-
     let c = await Curriculum.findOne({ url });
     if (c && c.url != curriculum.url) throw new Error('URl do currículo já existe');
-
     for (const item of extraCourses) {
       if (!item._id) {
-        delete item._id;
         let extCr = await ExtraCourses.create(item);
         curriculum.extraCourses.push(extCr._id);
       } else {
@@ -148,11 +144,10 @@ router.put("/:curriculumId", async (req, res) => {
       }
     }
 
-    for (const item of academicEducations) {
+    for (const item of academicEducation) {
       if (!item._id) {
-        delete item._id;
         let acadEdu = await AcademicEducation.create(item);
-        curriculum.academicEducations.push(acadEdu._id);
+        curriculum.academicEducation.push(acadEdu._id);
       } else {
         await AcademicEducation.findOneAndUpdate({ _id: item._id }, item, {
           upsert: true,
@@ -163,7 +158,6 @@ router.put("/:curriculumId", async (req, res) => {
 
     for (const item of language) {
       if (!item._id) {
-        delete item._id;
         let lngu = await Language.create(item);
         curriculum.language.push(lngu._id);
       } else {
@@ -176,7 +170,6 @@ router.put("/:curriculumId", async (req, res) => {
 
     for (const item of professionalExperience) {
       if (!item._id) {
-        delete item._id;
         let prfExp = await ProfessionalExperience.create(item);
         curriculum.professionalExperience.push(prfExp._id);
       } else {
@@ -189,7 +182,6 @@ router.put("/:curriculumId", async (req, res) => {
 
     for (const item of skill) {
       if (!item._id) {
-        delete item._id;
         let skl = await Skill.create(item);
         curriculum.skill.push(skl._id);
       } else {
@@ -199,18 +191,15 @@ router.put("/:curriculumId", async (req, res) => {
         });
       }
     }
-
     curriculum.extraCourses = extraCourses;
     curriculum.styleCurriculum = styleCurriculum;
-    curriculum.professionalExperience = professionalExperience;
+    curriculum.erewqewqerdt = professionalExperience;
     curriculum.academicEducation = academicEducation;
     curriculum.skill = skill;
     curriculum.language = language;
     curriculum.aboutMe = aboutMe;
     curriculum.hobby = hobby;
-    console.log(curriculum);
-
-    await curriculum.save();
+    await Curriculum.updateOne({_id: curriculum._id}, curriculum)
     return res.send({ curriculum });
   } catch (err) {
     return res.status(400).send({ error: err });

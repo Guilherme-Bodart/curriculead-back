@@ -5,13 +5,16 @@ const ProfessionalExperienceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  office: {
+    type: String,
+    required: true,
+  },
   startDate: {
     type: Date,
     required: true,
   },
   endDate: {
     type: Date,
-    required: true,
   },
   currentPosition: {
     type: Boolean,

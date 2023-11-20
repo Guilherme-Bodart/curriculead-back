@@ -111,7 +111,6 @@ router.put("/register", async (req, res) => {
     extraCourses,
     academicEducations,
   } = req.body;
-  console.log("BODY", req.body);
 
   if (email === "" || email === undefined) {
     return res.status(400).send({ error: "E-mail is null" });
@@ -295,10 +294,17 @@ router.post("/reset_password", async (req, res) => {
 
 router.get("/curriculum/:url", async (req, res) => {
   try {
-    const curriculum = await Curriculum.findOne({ url: req.params.url });
+    const curriculum = await Curriculum.findOne({ url: req.params.url }).populate([
+      "academicEducation",
+      "styleCurriculum",
+      "language",
+      "extraCourses",
+      "professionalExperience",
+      "skill",
+    ]);
+    if (!curriculum) throw new Error('Curriculum URL does not exists');
     res.send({ curriculum });
   } catch (err) {
-    console.log(err.message);
     res
       .status(400)
       .send({ error: err.message });

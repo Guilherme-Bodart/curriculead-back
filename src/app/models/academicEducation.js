@@ -15,7 +15,6 @@ const academicEducationSchema = new mongoose.Schema({
   },
   endDate: {
     type: Date,
-    required: true,
   },
 });
 
