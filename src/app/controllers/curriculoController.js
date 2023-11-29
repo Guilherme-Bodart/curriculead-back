@@ -199,7 +199,8 @@ router.put("/:curriculumId", async (req, res) => {
     curriculum.language = language;
     curriculum.aboutMe = aboutMe;
     curriculum.hobby = hobby;
-    await Curriculum.updateOne({_id: curriculum._id}, curriculum)
+    await Curriculum.updateOne({_id: curriculum._id}, curriculum);
+    
     return res.send({ curriculum });
   } catch (err) {
     return res.status(400).send({ error: err });

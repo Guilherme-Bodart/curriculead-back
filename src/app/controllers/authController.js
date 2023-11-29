@@ -11,24 +11,6 @@ const ExtraCourses = require("../models/extraCourses");
 
 const router = express.Router();
 
-// router.post("/register/linkedin", async (req, res) => {
-//   passport.use(
-//     new LinkedInStrategy(
-//       {
-//         clientID: LINKEDIN_KEY,
-//         clientSecret: LINKEDIN_SECRET,
-//         callbackURL: "http://127.0.0.1:3002/auth/linkedin/callback",
-//         scope: ["r_emailaddress", "r_liteprofile"],
-//       },
-//       (accessToken, refreshToken, profile, done) => {
-//         process.nextTick(() => {
-//           return done(null, profile);
-//         });
-//       }
-//     )
-//   );
-// });
-
 function generateToken(params = {}) {
   return jwt.sign(params, authConfig.secret, {
     expiresIn: 86400,
