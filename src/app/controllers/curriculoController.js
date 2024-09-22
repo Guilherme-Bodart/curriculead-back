@@ -24,6 +24,9 @@ router.get("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
+    if (!user.curriculumId) {
+      throw new Error("Curriculum not found");
+    }
     const curriculum = await Curriculum.findOne(user.curriculumId).populate([
       "academicEducation",
       "styleCurriculum",
@@ -54,7 +57,7 @@ router.post("/", async (req, res) => {
 
     const usuario = await User.findById(req.usuarioId);
     let c = await Curriculum.findOne({ url });
-    if (c) throw new Error('Curriculum URL already exists');
+    if (c) throw new Error("Curriculum URL already exists");
 
     const newStyleCurriculum = await StyleCurriculum.create(styleCurriculum);
 
@@ -117,6 +120,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:curriculumId", async (req, res) => {
+  console.log("wtd");
   try {
     const {
       extraCourses,
@@ -131,7 +135,8 @@ router.put("/:curriculumId", async (req, res) => {
     } = req.body;
     var curriculum = await Curriculum.findById(req.params.curriculumId);
     let c = await Curriculum.findOne({ url });
-    if (c && c.url != curriculum.url) throw new Error('URl do currículo já existe');
+    if (c && c.url != curriculum.url)
+      throw new Error("URl do currículo já existe");
     for (const item of extraCourses) {
       if (!item._id) {
         let extCr = await ExtraCourses.create(item);
@@ -199,8 +204,8 @@ router.put("/:curriculumId", async (req, res) => {
     curriculum.language = language;
     curriculum.aboutMe = aboutMe;
     curriculum.hobby = hobby;
-    await Curriculum.updateOne({_id: curriculum._id}, curriculum);
-    
+    await Curriculum.updateOne({ _id: curriculum._id }, curriculum);
+
     return res.send({ curriculum });
   } catch (err) {
     return res.status(400).send({ error: err });
