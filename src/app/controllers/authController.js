@@ -174,7 +174,7 @@ router.get("/users", async (req, res) => {
 router.get("/user/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    const curriculum = await Curriculum.findById(user.curriculum);
+    const curriculum = await Curriculum.findById(user.curriculumId);
     return res.send({ user, curriculum });
   } catch (err) {
     return res.status(400).send({ error: "Error loading users" });
